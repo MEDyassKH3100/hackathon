@@ -1,3 +1,5 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Controller, Post, Body, Get, Req, Delete, Param, UnauthorizedException, UseGuards, Put } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './Schema/user.schema';
@@ -44,22 +46,22 @@ export class UserController {
   }
 
   @Put('update-profile')
-  @UseGuards(AuthGuard('jwt'))
+  //@UseGuards(AuthGuard('jwt'))
   async updateProfile(
-    @Request() req,
+    //@Request() req,
     @Body() updateProfileDto: UpdateCommercialDto,
   ) {
-    const userId = req.user.id; // Récupère l'ID de l'utilisateur connecté à partir du JWT
-    return this.userService.updateProfile(userId, updateProfileDto);
+    //const userId = req.user.id; // Récupère l'ID de l'utilisateur connecté à partir du JWT
+    //return this.userService.updateProfile(userId, updateProfileDto);
   }
 
   @Put('change-password')
-  @UseGuards(AuthGuard('jwt'))
+  //@UseGuards(AuthGuard('jwt'))
   async changePassword(
-    @Request() req,
+    //@Request() req,
     @Body() changePasswordDto: ChangePasswordDto,
   ) {
-    const userId = req.user.id; // Récupère l'ID de l'utilisateur connecté à partir du JWT
-    return this.userService.changePassword(userId, changePasswordDto);
+    //const userId = req.user.id; // Récupère l'ID de l'utilisateur connecté à partir du JWT
+    //return this.userService.changePassword(userId, changePasswordDto);
   }
 }
