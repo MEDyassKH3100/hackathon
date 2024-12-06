@@ -17,6 +17,8 @@ export class UserController {
 
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
+    console.log("aaaa");
+
     const { email, password } = loginDto; // Extraire email et password depuis le DTO
     return this.userService.login(email, password); // Passer les deux arguments
   }

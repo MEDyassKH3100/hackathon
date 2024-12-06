@@ -25,6 +25,7 @@ export class UserService {
 
  // Fonction de connexion
  async login(email: string, password: string): Promise<{ token: string }> {
+  console.log("aaaa");
     const user = await this.userModel.findOne({ email }).exec();
 
     if (!user) {
