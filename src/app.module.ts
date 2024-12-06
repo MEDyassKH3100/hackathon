@@ -6,6 +6,8 @@ import * as bcrypt from 'bcrypt';
 import { User, UserSchema } from './User/Schema/user.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { UserController } from './user/user.controller';
+import { VisiteModule } from './visite/visite.module';
+import { PointventeModule } from './pointvente/pointvente.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { UserController } from './user/user.controller';
       secret: process.env.JWT_SECRET || 'defaultSecretKey', // Vous pouvez utiliser une clé secrète stockée dans .env
       signOptions: { expiresIn: '1h' }, 
     }),
+    VisiteModule,
+    PointventeModule,
   ],
   controllers: [UserController], 
 

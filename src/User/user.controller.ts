@@ -108,7 +108,7 @@ export class UserController {
   @Patch('Active-commercial/:id')
   async ActiveCommercial(@Param('id') id: string) {
     return this.userService.ActiveCommercial(id);
-  }
+  } 
 
 
 }
