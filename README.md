@@ -1,99 +1,155 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+this controllet is responsibel for displaying the visit and save the visit you will find a commnetatire that indicate hos to send  request to that method it it is post and it is get you will find how it return in order to fetch it correctly  in th front 
+/* eslint-disable prettier/prettier */
+import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { ProduitPrixVariationService } from './produit-prix-variation.service';
+import { CreateProduitPrixVariationDto } from './dto/create-produit-prix-variation.dto';
+import { UpdateProduitPrixVariationDto } from './dto/update-produit-prix-variation.dto';
+import { CreateVisiteDto } from 'src/visite/dto/create-visite.dto';
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+@Controller('produit-prix-variation')
+export class ProduitPrixVariationController {
+  constructor(private readonly produitPrixVariationService: ProduitPrixVariationService) {}
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+/*example how you can test this funcyion in postmen 
 
-## Project setup
+create visit function 
 
-```bash
-$ npm install
-```
+{
+  "pointDeVenteId": "675244a606a5cdf546751c7d",
+  "createVisiteDto": {
+    "date": "2024-12-05T10:00:00Z",
+    "observation": "Visit observation text",
+    "reclamation": "Reclamation text",
+    "pieceJointe": "Attachment link",
+    "userId": "67522fecc4e52db5aceb684f"
+  },
+  "data": [
+    {
+      "cimenterieId": "67527ce0fbf1182411d2f80f",
+      "produits": ["67525cc94b152e3ada2c9925", "67525d228b3fdbf513e5f072"],
+      "prixTable": [10.5, 20.0]
+    },
+    {
+      "cimenterieId": "67527ba42c76063f9fa4563b",
+      "produits": ["6752610659408ad9e756f5ab", "67525cc94b152e3ada2c9925"],
+      "prixTable": [30.0, 40.0]
+    }
+  ]
+}
 
-## Compile and run the project
+!!important  for the data you to implement front logic that add  the content of data dynamicly 
+*/
 
-```bash
-# development
-$ npm run start
 
-# watch mode
-$ npm run start:dev
+  @Post('/create-produit-prix-variation')
+  async createProduitPrixVariation(
+    @Body('pointDeVenteId') pointDeVenteId: string,
+    @Body('createVisiteDto') createVisiteDto: CreateVisiteDto,
+    @Body('data') data: {
+      cimenterieId: string;
+      produits: string[];
+      prixTable: number[];
+    }[],
+  ) {
+    return this.produitPrixVariationService.createProduitPrixVariation(
+      pointDeVenteId,
+      createVisiteDto,
+      data,
+    );
+  }
 
-# production mode
-$ npm run start:prod
-```
 
-## Run tests
 
-```bash
-# unit tests
-$ npm run test
 
-# e2e tests
-$ npm run test:e2e
+  @Post()
+  create(@Body() createProduitPrixVariationDto: CreateProduitPrixVariationDto) {
+    return this.produitPrixVariationService.create(createProduitPrixVariationDto);
+  }
 
-# test coverage
-$ npm run test:cov
-```
+  @Get()
+  findAll() {
+    return this.produitPrixVariationService.findAll();
+  }
 
-## Deployment
+/* this function respnse like this  to get vistit detail !!important get a visist detail 
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+{
+    "pointDeVente": "string",
+    "visiteId": "675282113600dea8449a53e7",
+    "date": "2024-12-06T04:48:17.172Z",
+    "observation": "Visit observation text",
+    "cimentries": [
+        {
+            "cimenterieName": "buez fezyf ezuibfezuf er",
+            "produits": [
+                {
+                    "produitName": "siman",
+                    "prix": 10.5
+                },
+                {
+                    "produitName": "omo",
+                    "prix": 20
+                }
+            ]
+        },
+        {
+            "produits": [
+                {
+                    "produitName": "siman",
+                    "prix": 30
+                },
+                {
+                    "produitName": "siman",
+                    "prix": 40
+                }
+            ]
+        }
+    ]
+}*/
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
 
-```bash
-$ npm install -g mau
-$ mau deploy
-```
+//--------------this function  get a visit all detal il fou9 exmpale fifah tarjaa reponse 
+  @Get('/:id')
+  async getVisiteById(@Param('id') id: string) {
+    return this.produitPrixVariationService.getVisiteById(id);
+  }
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
 
-## Resources
 
-Check out a few resources that may come in handy when working with NestJS:
+  //------------------------------------------------------------
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateProduitPrixVariationDto: UpdateProduitPrixVariationDto) {
+    return this.produitPrixVariationService.update(+id, updateProduitPrixVariationDto);
+  }
 
-## Support
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.produitPrixVariationService.remove(+id);
+  }
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
 
-## Stay in touch
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
 
-## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
