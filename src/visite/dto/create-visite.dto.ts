@@ -3,7 +3,7 @@
 import { IsDate, IsOptional, IsString } from 'class-validator';
 
 export class CreateVisiteDto {
-    @IsOptional()
+@IsOptional()
   @IsDate()
   date: Date;
 
@@ -17,4 +17,9 @@ export class CreateVisiteDto {
   @IsOptional()
   @IsString()
   pieceJointe?: string;
+
+  @IsOptional()
+  @IsString()
+  userId:string
+
 }

@@ -19,6 +19,9 @@ export class Visite extends Document {
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   user: Types.ObjectId; // Reference to the User schema
+
+  @Prop({ type: Types.ObjectId, ref: 'Pointvente', required: true })
+  pointvente: Types.ObjectId; // Reference to the Pointvente model
 }
 
 export const VisiteSchema = SchemaFactory.createForClass(Visite);

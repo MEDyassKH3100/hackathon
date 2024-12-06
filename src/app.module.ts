@@ -7,6 +7,7 @@ import { User, UserSchema } from './User/Schema/user.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { UserController } from './user/user.controller';
 import { VisiteModule } from './visite/visite.module';
+import { PointventeModule } from './pointvente/pointvente.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { VisiteModule } from './visite/visite.module';
       signOptions: { expiresIn: '1h' }, 
     }),
     VisiteModule,
+    PointventeModule,
   ],
   controllers: [UserController], 
 

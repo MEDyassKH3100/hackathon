@@ -5,6 +5,7 @@ import { VisiteController } from './visite.controller';
 import { Visite, VisiteSchema } from './entities/visite.entity';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from 'src/user/Schema/user.schema';
+import { Pointvente ,PointventeSchema} from 'src/pointvente/entities/pointvente.entity';
 
 @Module({
 
@@ -13,6 +14,8 @@ import { User, UserSchema } from 'src/user/Schema/user.schema';
     MongooseModule.forFeature([
       { name: Visite.name, schema: VisiteSchema },
       { name: User.name, schema: UserSchema },
+      { name: Pointvente.name, schema: PointventeSchema },
+
     ]),
   ],
   controllers: [VisiteController],
