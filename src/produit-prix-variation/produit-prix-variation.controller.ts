@@ -15,7 +15,7 @@ export class ProduitPrixVariationController {
 
 /*example how you can test this funcyion in postmen 
 
-create visit function 
+create visit function  [Post] create visite related to pint de vente 
 
 {
   "pointDeVenteId": "675244a606a5cdf546751c7d",
@@ -74,7 +74,7 @@ create visit function
     return this.produitPrixVariationService.findAll();
   }
 
-/* this function respnse like this  to get vistit detail !!important get a visist detail 
+/* this function respnse like this [GET] visit [By point de vente Id ] 
 
 {
     "pointDeVente": "string",
@@ -119,7 +119,7 @@ create visit function
 
 
 
-  //------------------------------update visit function ------------------------------
+  //------------------------------[PATCH]update visit function ------------------------------
 
 /* Update function  for vivist you should add this to the body of your reuqest 
 example how yo can pass input to this function 
