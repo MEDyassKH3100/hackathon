@@ -15,7 +15,7 @@ export class ProduitPrixVariationController {
 
 /*example how you can test this funcyion in postmen 
 
-create visit function 
+create visit function  [Post] create visite related to pint de vente 
 
 {
   "pointDeVenteId": "675244a606a5cdf546751c7d",
@@ -34,8 +34,8 @@ create visit function
     },
     {
       "cimenterieId": "67527ba42c76063f9fa4563b",
-      "produits": ["6752610659408ad9e756f5ab", "67525cc94b152e3ada2c9925"],
-      "prixTable": [30.0, 40.0]
+      "produits": ["6752610659408ad9e756f5ab"],
+      "prixTable": [30.0]
     }
   ]
 }
@@ -74,7 +74,7 @@ create visit function
     return this.produitPrixVariationService.findAll();
   }
 
-/* this function respnse like this  to get vistit detail !!important get a visist detail 
+/* this function respnse like this [GET] visit [By point de vente Id ] 
 
 {
     "pointDeVente": "string",
@@ -119,7 +119,7 @@ create visit function
 
 
 
-  //------------------------------update visit function ------------------------------
+  //------------------------------[PATCH]update visit function ------------------------------
 
 /* Update function  for vivist you should add this to the body of your reuqest 
 example how yo can pass input to this function 
@@ -181,6 +181,87 @@ example how yo can pass input to this function
   remove(@Param('id') id: string) {
     return this.produitPrixVariationService.remove(+id);
   }
+
+
+//--------------------- [Get] POINT de Vente Info ----------------------
+//this  is for  consulter client interface  rerturn point devente infortaion 
+/*this  fucntion return 
+
+{
+    "gouvernorat": "string",
+    "delegation": "string",
+    "adresse": "string",
+    "naturedepointdevente": "string",
+    "tel": "string",
+    "name": "string",
+    "visitData": [
+        {
+            "reclamation": "Reclamation text",
+            "observation": "Observation text"
+        },
+        {
+            "reclamation": "Reclamation text here",
+            "observation": "spotcha-18"
+        },
+        
+    ],
+    "cimentries": [
+        {
+            "cimenterieName": "buez fezyf ezuibfezuf er",
+            "produits": [
+                {
+                    "produitName": "siman",
+                    "prix": 10.5
+                },
+                {
+                    "produitName": "omo",
+                    "prix": 20
+                },
+                {
+                    "produitName": "0siman abyed",
+                    "prix": 100
+                }
+            ]
+        },
+        {
+            "produits": [
+                {
+                    "produitName": "0siman abyed",
+                    "prix": 40
+                }
+            ]
+        },
+        {
+            "cimenterieName": "fefefe",
+            "produits": [
+                {
+                    "produitName": "0siman abyed",
+                    "prix": 40
+                }
+            ]
+        }
+    ]
+}
+
+
+*/
+  @Get('getPointDeVenteData/:id')
+  getPointDeVenteData(@Param('id') id: string) {
+    return this.produitPrixVariationService.getPointDeVenteData(id);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
