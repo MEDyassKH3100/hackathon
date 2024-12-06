@@ -10,6 +10,10 @@ import { UserController } from './user/user.controller';
 import { VisiteModule } from './visite/visite.module';
 import { PointventeModule } from './pointvente/pointvente.module';
 import { MailModule } from './Service/mail.module';
+import { ProduitPrixVariation } from './produit-prix-variation/entities/produit-prix-variation.entity';
+import { Produit } from './produit/entities/produit.entity';
+import { ProduitModule } from './produit/produit.module';
+import { ProduitPrixVariationModule } from './produit-prix-variation/produit-prix-variation.module';
 
 @Module({
   imports: [
@@ -22,6 +26,8 @@ import { MailModule } from './Service/mail.module';
     VisiteModule,
     PointventeModule,
     MailModule,
+    ProduitPrixVariationModule,
+    ProduitModule
   ],
   controllers: [UserController], 
 
