@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { ProduitPrixVariationService } from './produit-prix-variation.service';
 import { CreateProduitPrixVariationDto } from './dto/create-produit-prix-variation.dto';
 import { UpdateProduitPrixVariationDto } from './dto/update-produit-prix-variation.dto';
 import { CreateVisiteDto } from 'src/visite/dto/create-visite.dto';
+import { UpdateVisiteDto } from 'src/visite/dto/update-visite.dto';
 
 @Controller('produit-prix-variation')
 export class ProduitPrixVariationController {
@@ -117,12 +119,63 @@ create visit function
 
 
 
-  //------------------------------------------------------------
+  //------------------------------update visit function ------------------------------
 
+/* Update function  for vivist you should add this to the body of your reuqest 
+example how yo can pass input to this function 
+{
+  "pointDeVenteId": "675244a606a5cdf546751c7d",
+  "updateVisiteDto": {
+    "date": "2024-12-06",
+    "observation": "This is an updated observation",
+    "reclamation": "Reclamation text here",
+    "userId": "67522fecc4e52db5aceb684f"
+  },
+  "data": [
+    {
+      "cimenterieId": "675291b76feeb33c7b1c277e",
+      "produits": ["67525d228b3fdbf513e5f072", "67525d228b3fdbf513e5f072"],
+      "prixTable": [25.5, 30.0]
+    },
+    {
+      "cimenterieId": "67527ce0fbf1182411d2f80f",
+      "produits": ["67525d228b3fdbf513e5f072"],
+      "prixTable": [20.0]
+    }
+  ]
+}
+*/
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProduitPrixVariationDto: UpdateProduitPrixVariationDto) {
-    return this.produitPrixVariationService.update(+id, updateProduitPrixVariationDto);
+  async updateVisite(
+    @Param('id') visiteId: string,
+    @Body() body: { 
+      pointDeVenteId: string;
+      updateVisiteDto: { date: Date; observation: string;reclamation: string,userId :string};
+      data: {
+        cimenterieId: string;
+        produits: string[];
+        prixTable: number[];
+      }[];
+    },
+  ) {
+    const { pointDeVenteId, updateVisiteDto, data } = body;
+
+    // Call the service method to update the visit
+    const updatedVariations = await this.produitPrixVariationService.updateProduitPrixVariation(
+      visiteId,
+      pointDeVenteId,
+      updateVisiteDto,
+      data,
+    );
+
+    return {
+      message: 'Visite updated successfully',
+      variations: updatedVariations,
+    };
   }
+
+
+
 
   @Delete(':id')
   remove(@Param('id') id: string) {
