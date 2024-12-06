@@ -71,10 +71,53 @@ create visit function
   findAll() {
     return this.produitPrixVariationService.findAll();
   }
+
+/* this function respnse like this  to get vistit detail !!important get a visist detail 
+
+{
+    "pointDeVente": "string",
+    "visiteId": "675282113600dea8449a53e7",
+    "date": "2024-12-06T04:48:17.172Z",
+    "observation": "Visit observation text",
+    "cimentries": [
+        {
+            "cimenterieName": "buez fezyf ezuibfezuf er",
+            "produits": [
+                {
+                    "produitName": "siman",
+                    "prix": 10.5
+                },
+                {
+                    "produitName": "omo",
+                    "prix": 20
+                }
+            ]
+        },
+        {
+            "produits": [
+                {
+                    "produitName": "siman",
+                    "prix": 30
+                },
+                {
+                    "produitName": "siman",
+                    "prix": 40
+                }
+            ]
+        }
+    ]
+}*/
+
+
+//--------------this function  get a visit all detal il fou9 exmpale fifah tarjaa reponse 
   @Get('/:id')
   async getVisiteById(@Param('id') id: string) {
     return this.produitPrixVariationService.getVisiteById(id);
   }
+
+
+
+  //------------------------------------------------------------
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProduitPrixVariationDto: UpdateProduitPrixVariationDto) {
