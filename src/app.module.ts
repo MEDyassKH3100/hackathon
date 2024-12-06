@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 // src/app.module.ts
 import { Module, OnModuleInit } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -8,9 +9,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { UserController } from './user/user.controller';
 import { VisiteModule } from './visite/visite.module';
 import { PointventeModule } from './pointvente/pointvente.module';
-import { ProduitModule } from './produit/produit.module';
-import { CimenterieModule } from './cimenterie/cimenterie.module';
-import { ProduitPrixVariationModule } from './produit-prix-variation/produit-prix-variation.module';
+import { MailModule } from './Service/mail.module';
 
 @Module({
   imports: [
@@ -22,9 +21,7 @@ import { ProduitPrixVariationModule } from './produit-prix-variation/produit-pri
     }),
     VisiteModule,
     PointventeModule,
-    ProduitModule,
-    CimenterieModule,
-    ProduitPrixVariationModule,
+    MailModule,
   ],
   controllers: [UserController], 
 
