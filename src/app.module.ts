@@ -8,6 +8,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { UserController } from './user/user.controller';
 import { VisiteModule } from './visite/visite.module';
 import { PointventeModule } from './pointvente/pointvente.module';
+import { ProduitModule } from './produit/produit.module';
+import { CimenterieModule } from './cimenterie/cimenterie.module';
+import { ProduitPrixVariationModule } from './produit-prix-variation/produit-prix-variation.module';
 
 @Module({
   imports: [
@@ -19,6 +22,9 @@ import { PointventeModule } from './pointvente/pointvente.module';
     }),
     VisiteModule,
     PointventeModule,
+    ProduitModule,
+    CimenterieModule,
+    ProduitPrixVariationModule,
   ],
   controllers: [UserController], 
 
