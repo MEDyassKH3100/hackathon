@@ -14,6 +14,7 @@ import { CreateCommercialDto } from './Dto/create-commercial.dto';
 import { CreateUserDto } from './Dto/create-user.dto';
 import { UpdateCommercialDto } from './Dto/update-commercial.dto';
 import { ChangePasswordDto } from './Dto/change-password.dto';
+import { MailService } from 'src/Service/mail.service';
 dotenv.config();
 
 const defaultEmail = process.env.ADMIN_EMAIL;
@@ -24,6 +25,7 @@ export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
   // Fonction de connexion
@@ -229,4 +231,60 @@ export class UserService {
 
     return user;
   }
+
+    // Étape 1 : Oublier le mot de passe et envoyer un OTP
+    async forgotPassword(email: string) {
+      const user = await this.userModel.findOne({ email });
+      if (!user) {
+        throw new NotFoundException('Utilisateur introuvable.');
+      }
+  
+      const otp = Math.floor(100000 + Math.random() * 900000); // Génère un OTP à 6 chiffres
+      const otpExpire = new Date();
+      otpExpire.setMinutes(otpExpire.getMinutes() + 10); // Expire dans 10 minutes
+  
+      user.otp = otp.toString();
+      user.otpExpire = otpExpire;
+      await user.save();
+  
+      await this.mailService.sendOtpEmail(email, otp);
+  
+      return { message: 'Un OTP a été envoyé à votre adresse email.', userId: user._id };
+    }
+     // Étape 2 : Vérifier l'OTP
+  async verifyOtp(otp: number) {
+    const user = await this.userModel.findOne({
+      otp,
+      otpExpire: { $gte: new Date() }, // Vérifie si l'OTP n'est pas expiré
+    });
+
+    if (!user) {
+      throw new BadRequestException('OTP invalide ou expiré.');
+    }
+
+    user.otpVerified = true;
+    user.otp = null; // Supprime l'OTP après vérification
+    user.otpExpire = null;
+    await user.save();
+
+    return { message: 'OTP vérifié avec succès.', userId: user._id };
+  }
+    // Étape 3 : Réinitialiser le mot de passe
+    async resetPassword(userId: string, newPassword: string) {
+      const user = await this.userModel.findOne({
+        _id: userId,
+        otpVerified: true, // Vérifie que l'OTP a été vérifié
+      });
+  
+      if (!user) {
+        throw new UnauthorizedException('La vérification de l’OTP est requise.');
+      }
+  
+      user.password = await bcrypt.hash(newPassword, 10);
+      user.otpVerified = false; // Réinitialise le statut
+      await user.save();
+  
+      return { message: 'Votre mot de passe a été réinitialisé avec succès.' };
+    }
+
 }

@@ -30,6 +30,18 @@ export class User extends Document {
   equipeRegionale?: string;
   @Prop({ default: false })
   isBanned: boolean;
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Visite' }] })
+  visites: Types.ObjectId[]; 
+
+  @Prop()
+  otp: string;
+
+  @Prop()
+  otpExpire: Date;
+  static email: any;
+
+  @Prop({ default: false })
+  otpVerified: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

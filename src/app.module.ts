@@ -8,6 +8,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { UserController } from './user/user.controller';
 import { VisiteModule } from './visite/visite.module';
 import { PointventeModule } from './pointvente/pointvente.module';
+import { MailModule } from './Service/mail.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { PointventeModule } from './pointvente/pointvente.module';
     }),
     VisiteModule,
     PointventeModule,
+    MailModule,
   ],
   controllers: [UserController], 
 
