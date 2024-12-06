@@ -14,6 +14,8 @@ import { ProduitPrixVariation } from './produit-prix-variation/entities/produit-
 import { Produit } from './produit/entities/produit.entity';
 import { ProduitModule } from './produit/produit.module';
 import { ProduitPrixVariationModule } from './produit-prix-variation/produit-prix-variation.module';
+import { CimenterieModule } from './cimenterie/cimenterie.module';
+import { UserModule } from './User/user.module';
 
 @Module({
   imports: [
@@ -27,7 +29,8 @@ import { ProduitPrixVariationModule } from './produit-prix-variation/produit-pri
     PointventeModule,
     MailModule,
     ProduitPrixVariationModule,
-    ProduitModule
+    ProduitModule,
+    CimenterieModule,UserModule
   ],
   controllers: [UserController], 
 
