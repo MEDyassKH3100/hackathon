@@ -6,6 +6,7 @@ import { Visite, VisiteSchema } from './entities/visite.entity';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from 'src/user/Schema/user.schema';
 import { Pointvente ,PointventeSchema} from 'src/pointvente/entities/pointvente.entity';
+import { ProduitPrixVariation,ProduitPrixVariationSchema } from 'src/produit-prix-variation/entities/produit-prix-variation.entity';
 
 @Module({
 
@@ -15,6 +16,8 @@ import { Pointvente ,PointventeSchema} from 'src/pointvente/entities/pointvente.
       { name: Visite.name, schema: VisiteSchema },
       { name: User.name, schema: UserSchema },
       { name: Pointvente.name, schema: PointventeSchema },
+      { name: ProduitPrixVariation.name, schema: ProduitPrixVariationSchema },
+
 
     ]),
   ],

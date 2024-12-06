@@ -1,4 +1,3 @@
-this controllet is responsibel for displaying the visit and save the visit you will find a commnetatire that indicate hos to send  request to that method it it is post and it is get you will find how it return in order to fetch it correctly  in th front 
 /* eslint-disable prettier/prettier */
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { ProduitPrixVariationService } from './produit-prix-variation.service';

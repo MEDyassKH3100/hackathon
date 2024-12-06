@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './Schema/user.schema';
@@ -9,27 +14,38 @@ import { CreateCommercialDto } from './Dto/create-commercial.dto';
 import { CreateUserDto } from './Dto/create-user.dto';
 import { UpdateCommercialDto } from './Dto/update-commercial.dto';
 import { ChangePasswordDto } from './Dto/change-password.dto';
+import { MailService } from 'src/Service/mail.service';
 dotenv.config();
 
 const defaultEmail = process.env.ADMIN_EMAIL;
 const defaultPassword = process.env.ADMIN_PASSWORD;
 
-
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>,
-  private jwtService: JwtService,
-) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private jwtService: JwtService,
+    private readonly mailService: MailService,
+  ) {}
 
+<<<<<<< HEAD
 
 
  // Fonction de connexion
  async login(email: string, password: string): Promise<{ token: string }> {
   console.log("aaaa");
+=======
+  // Fonction de connexion
+  async login(email: string, password: string): Promise<{ token: string }> {
+>>>>>>> 5cb0be8afdc87903b48954fddc5fa3fe726801cc
     const user = await this.userModel.findOne({ email }).exec();
 
     if (!user) {
       throw new UnauthorizedException('Email ou mot de passe incorrect.');
+    }
+
+    if (user.isBanned) {
+      throw new UnauthorizedException('Votre compte a été banni');
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -43,13 +59,11 @@ export class UserService {
     return { token };
   }
 
-
   // Créer un utilisateur (Admin ou Commercial)
   async createUser(userData: Partial<User>): Promise<User> {
     const user = new this.userModel(userData);
     return user.save();
   }
-
 
   // Créer un admin statique
   async initializeDefaultAdmin() {
@@ -78,18 +92,21 @@ export class UserService {
     createCommercialDto: CreateCommercialDto,
   ): Promise<User> {
     if (adminRole !== 'Admin') {
-      throw new UnauthorizedException('Seul un Admin peut créer des commerciaux.');
+      throw new UnauthorizedException(
+        'Seul un Admin peut créer des commerciaux.',
+      );
     }
-  
-    const { email, password, nom, prenom, telephone, equipeRegionale } = createCommercialDto;
-  
+
+    const { email, password, nom, prenom, telephone, equipeRegionale } =
+      createCommercialDto;
+
     const existingUser = await this.userModel.findOne({ email }).exec();
     if (existingUser) {
       throw new UnauthorizedException('Cet email est déjà utilisé.');
     }
-  
+
     const hashedPassword = await bcrypt.hash(password, 10);
-  
+
     const newCommercial = new this.userModel({
       email,
       password: hashedPassword,
@@ -99,11 +116,9 @@ export class UserService {
       telephone,
       equipeRegionale,
     });
-  
+
     return newCommercial.save();
   }
-  
-  
 
   // Récupérer tous les utilisateurs par rôle
   async findUsersByRole(role: string): Promise<User[]> {
@@ -114,7 +129,7 @@ export class UserService {
   async deleteUser(userId: string): Promise<void> {
     await this.userModel.findByIdAndDelete(userId).exec();
   }
-// trouver un user à l'aide de son Email
+  // trouver un user à l'aide de son Email
   async findByEmail(email: string): Promise<User | null> {
     return this.userModel.findOne({ email }).exec();
   }
@@ -124,42 +139,160 @@ export class UserService {
     return createdUser.save();
   }
 
+  async updateProfile(
+    userId: string,
+    updateCommercialDto: UpdateCommercialDto,
+  ): Promise<User> {
+    // Find the user by ID
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new NotFoundException(`User with ID "${userId}" not found`);
+    }
 
-// Update Commerciale 
-async updateProfile(userId: string, updateProfileDto: UpdateCommercialDto): Promise<User> {
-  const user = await this.userModel.findById(userId);
-  if (!user) {
-    throw new NotFoundException(`User with ID "${userId}" not found`);
+    // Check if the user has the 'Commercial' role
+    if (user.role !== 'Commercial') {
+      throw new UnauthorizedException(
+        'Seuls les commerciaux peuvent mettre à jour leur profil',
+      );
+    }
+
+    // Update the user's profile
+    Object.assign(user, updateCommercialDto);
+    await user.save();
+
+    return user;
   }
 
-  // Mettez à jour les champs de l'utilisateur avec les valeurs du DTO
-  Object.assign(user, updateProfileDto);
-  await user.save();
+  // Change password Commerciale
+  async changePassword(
+    userId: string,
+    changePasswordDto: ChangePasswordDto,
+  ): Promise<void> {
+    const { oldPassword, newPassword } = changePasswordDto;
 
-  return user;
-}
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new UnauthorizedException(`User with ID "${userId}" not found`);
+    }
 
-async changePassword(userId: string, changePasswordDto: ChangePasswordDto): Promise<User> {
-  const { oldPassword, newPassword } = changePasswordDto;
+    const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
+    if (!isOldPasswordValid) {
+      throw new UnauthorizedException("L'ancien mot de passe est incorrect");
+    }
 
-  const user = await this.userModel.findById(userId);
-  if (!user) {
-    throw new NotFoundException(`User with ID "${userId}" not found`);
+    user.password = await bcrypt.hash(newPassword, 10); // Hachage du nouveau mot de passe
+    await user.save();
   }
 
-  const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
-  if (!isOldPasswordValid) {
-    throw new UnauthorizedException('Old password is incorrect');
+  // Récupérer tous les commerciaux
+  async getAllCommercials(): Promise<User[]> {
+    return this.userModel.find({ role: 'Commercial' }).exec();
   }
 
-  const saltRounds = 10;
-  const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
+  // Récupérer un commercial par ID
+  async getOneCommercial(id: string): Promise<User> {
+    const user = await this.userModel
+      .findOne({ _id: id, role: 'Commercial' })
+      .exec();
+    if (!user) {
+      throw new NotFoundException(`Commercial avec l'ID "${id}" introuvable`);
+    }
+    return user;
+  }
 
-  user.password = hashedNewPassword;
-  await user.save();
+  // Bannir un commercial
+  async banCommercial(userId: string): Promise<User> {
+    const user = await this.userModel
+      .findOne({ _id: userId, role: 'Commercial' })
+      .exec();
 
-  return user;
-}
+    if (!user) {
+      throw new NotFoundException(
+        `Commercial avec l'ID "${userId}" introuvable`,
+      );
+    }
 
+    if (user.isBanned) {
+      throw new BadRequestException(`Le commercial est déjà banni`);
+    }
+
+    user.isBanned = true; // Mise à jour de l'état de bannissement
+    await user.save();
+
+    return user;
+  }
+
+  // Active un commercial
+  async ActiveCommercial(userId: string): Promise<User> {
+    const user = await this.userModel
+      .findOne({ _id: userId, role: 'Commercial' })
+      .exec();
+
+    if (!user) {
+      throw new NotFoundException(
+        `Commercial avec l'ID "${userId}" introuvable`,
+      );
+    }
+
+    user.isBanned = false; 
+    await user.save();
+
+    return user;
+  }
+
+    // Étape 1 : Oublier le mot de passe et envoyer un OTP
+    async forgotPassword(email: string) {
+      const user = await this.userModel.findOne({ email });
+      if (!user) {
+        throw new NotFoundException('Utilisateur introuvable.');
+      }
+  
+      const otp = Math.floor(100000 + Math.random() * 900000); // Génère un OTP à 6 chiffres
+      const otpExpire = new Date();
+      otpExpire.setMinutes(otpExpire.getMinutes() + 10); // Expire dans 10 minutes
+  
+      user.otp = otp.toString();
+      user.otpExpire = otpExpire;
+      await user.save();
+  
+      await this.mailService.sendOtpEmail(email, otp);
+  
+      return { message: 'Un OTP a été envoyé à votre adresse email.', userId: user._id };
+    }
+     // Étape 2 : Vérifier l'OTP
+  async verifyOtp(otp: number) {
+    const user = await this.userModel.findOne({
+      otp,
+      otpExpire: { $gte: new Date() }, // Vérifie si l'OTP n'est pas expiré
+    });
+
+    if (!user) {
+      throw new BadRequestException('OTP invalide ou expiré.');
+    }
+
+    user.otpVerified = true;
+    user.otp = null; // Supprime l'OTP après vérification
+    user.otpExpire = null;
+    await user.save();
+
+    return { message: 'OTP vérifié avec succès.', userId: user._id };
+  }
+    // Étape 3 : Réinitialiser le mot de passe
+    async resetPassword(userId: string, newPassword: string) {
+      const user = await this.userModel.findOne({
+        _id: userId,
+        otpVerified: true, // Vérifie que l'OTP a été vérifié
+      });
+  
+      if (!user) {
+        throw new UnauthorizedException('La vérification de l’OTP est requise.');
+      }
+  
+      user.password = await bcrypt.hash(newPassword, 10);
+      user.otpVerified = false; // Réinitialise le statut
+      await user.save();
+  
+      return { message: 'Votre mot de passe a été réinitialisé avec succès.' };
+    }
 
 }
