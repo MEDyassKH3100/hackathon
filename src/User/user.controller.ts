@@ -1,4 +1,16 @@
-import { Controller, Post, Body, Get, Req, Delete, Param, UnauthorizedException, UseGuards, Put } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Req,
+  Delete,
+  Param,
+  UnauthorizedException,
+  UseGuards,
+  Put,
+  Patch,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './Schema/user.schema';
 import { LoginDto } from './Dto/login.dto';
@@ -8,6 +20,7 @@ import { RolesGuard } from 'src/Role/roles.guard';
 import { AuthGuard } from 'src/Guards/auth.guard';
 import { UpdateCommercialDto } from './Dto/update-commercial.dto';
 import { ChangePasswordDto } from './Dto/change-password.dto';
+import { Request as ExpressRequest } from 'express';
 
 @Controller('user')
 export class UserController {
@@ -18,19 +31,19 @@ export class UserController {
     const { email, password } = loginDto; // Extraire email et password depuis le DTO
     return this.userService.login(email, password); // Passer les deux arguments
   }
-  
-  
 
   // Route pour créer un commercial
   @Post('create-commercial')
   @Roles('Admin') // Restreint aux admins
   @UseGuards(AuthGuard, RolesGuard)
-  async createCommercial(@Req() req, @Body() createCommercialDto: CreateCommercialDto) {
+  async createCommercial(
+    @Req() req,
+    @Body() createCommercialDto: CreateCommercialDto,
+  ) {
     const adminRole = req.user.role; // Récupère le rôle depuis le JWT
     return this.userService.createCommercial(adminRole, createCommercialDto);
   }
-  
-  
+
   // Route pour récupérer tous les commerciaux
   @Get('commercials')
   async getCommercials() {
@@ -43,23 +56,59 @@ export class UserController {
     return this.userService.deleteUser(userId);
   }
 
+  // Mise à jour du profil pour le commercial connecté
+
+  @UseGuards(AuthGuard)
   @Put('update-profile')
-  @UseGuards(AuthGuard('jwt'))
   async updateProfile(
-    @Request() req,
-    @Body() updateProfileDto: UpdateCommercialDto,
+    @Req() req,
+    @Body() updateCommercialDto: UpdateCommercialDto,
   ) {
-    const userId = req.user.id; // Récupère l'ID de l'utilisateur connecté à partir du JWT
-    return this.userService.updateProfile(userId, updateProfileDto);
+    console.log('Utilisateur connecté :', req.user); // Log for debugging
+    const userId = req.user?.sub; // Access the user ID from the payload (sub)
+    if (!userId) {
+      throw new UnauthorizedException('Utilisateur non authentifié');
+    }
+    return this.userService.updateProfile(userId, updateCommercialDto);
   }
 
+  // Changer le mot de passe pour le commercial connecté
   @Put('change-password')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard)
   async changePassword(
-    @Request() req,
+    @Req() req,
     @Body() changePasswordDto: ChangePasswordDto,
   ) {
-    const userId = req.user.id; // Récupère l'ID de l'utilisateur connecté à partir du JWT
+    const userId = req.user?.sub; // Récupérer l'id de l'utilisateur connecté depuis le JWT
     return this.userService.changePassword(userId, changePasswordDto);
   }
+
+  @UseGuards(AuthGuard, RolesGuard) // Garder AuthGuard et le gardien des rôles
+  @Roles('Admin') // Accès réservé aux administrateurs
+  @Get('commercials')
+  async getAllCommercials() {
+    return this.userService.getAllCommercials();
+  }
+
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
+  @Get('commercials/:id')
+  async getOneCommercial(@Param('id') id: string) {
+    return this.userService.getOneCommercial(id);
+  }
+
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin') // Accès réservé aux administrateurs
+  @Patch('ban-commercial/:id')
+  async banCommercial(@Param('id') id: string) {
+    return this.userService.banCommercial(id);
+  }
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin') // Accès réservé aux administrateurs
+  @Patch('Active-commercial/:id')
+  async ActiveCommercial(@Param('id') id: string) {
+    return this.userService.ActiveCommercial(id);
+  }
+
+
 }

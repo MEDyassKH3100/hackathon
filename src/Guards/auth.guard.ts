@@ -1,30 +1,44 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  constructor(private readonly jwtService: JwtService) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  /*async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const authorizationHeader = request.headers.authorization;
+    const authHeader = request.headers['authorization'];
 
-    if (!authorizationHeader) {
-      return false;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      throw new UnauthorizedException('Token non fourni ou invalide');
     }
 
-    const token = authorizationHeader.split(' ')[1];
-    if (!token) {
-      return false;
-    }
-
+    const token = authHeader.split(' ')[1];
     try {
-      const decoded = this.jwtService.verify(token, { secret: process.env.JWT_SECRET || 'defaultSecretKey' });
-      request.user = decoded; // Ajoute les informations de l'utilisateur au request
+      const payload = this.jwtService.verify(token);
+      request.user = payload; // Injecte les informations utilisateur dans req.user
       return true;
-    } catch (error) {
-      console.error('Token verification failed:', error.message);
-      return false;
+    } catch (err) {
+      throw new UnauthorizedException('Token invalide ou expiré');
     }
-  }
+  }*/
+    async canActivate(context: ExecutionContext): Promise<boolean> {
+      const request = context.switchToHttp().getRequest();
+      const authHeader = request.headers['authorization'];
+  
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        throw new UnauthorizedException('Token non fourni ou invalide');
+      }
+  
+      const token = authHeader.split(' ')[1];
+      try {
+        const payload = this.jwtService.verify(token);
+        request.user = payload; // Attach the user payload to the request object
+        return true;
+      } catch (err) {
+        throw new UnauthorizedException('Token invalide ou expiré');
+      }
+    }
+    
+    
 }
