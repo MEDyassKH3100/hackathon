@@ -350,4 +350,120 @@ var pointventeName = (await this.PointVenteModel.findById(visite.pointvente)).na
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+async getPointDeVenteData(pointDeVenteId: string) {
+  // Step 1: Fetch the Point de Vente
+  const pointDeVente = await this.PointVenteModel.findById(pointDeVenteId).exec();
+
+  if (!pointDeVente) {
+    throw new Error('Point de Vente not found');
+  }
+
+  // Step 2: Extract related visits
+  const visitIds = pointDeVente.visites; // Visites IDs from the Point de Vente
+
+  if (!visitIds || visitIds.length === 0) {
+    throw new Error('No visits associated with this Point de Vente');
+  }
+
+  // Step 3: Fetch associated visits data (including reclamation and observation)
+  const visits = await this.visiteModel.find({ _id: { $in: visitIds } }).exec();
+
+  if (!visits || visits.length === 0) {
+    throw new Error('No visit data found for the Point de Vente');
+  }
+
+  // Step 4: Extract reclamation and observation from visits
+  const visitData = visits.map((visit) => ({
+    reclamation: visit.reclamation || 'No reclamation available',
+    observation: visit.observation || 'No observation available',
+  }));
+
+  // Step 5: Fetch associated ProduitPrixVariation data
+  const produitPrixVariations = await this.produitPrixVariationModel
+    .find({ visite: { $in: visitIds } })
+    .populate('produit cimenterie') // Populate related produit and cimenterie
+    .exec();
+
+  // Step 6: Group data by Cimenterie
+  const groupedByCimenterie = produitPrixVariations.reduce((acc, variation) => {
+    const cimenterieId = variation.cimenterie._id.toString(); // Use cimenterie ID as key
+    const produitId = variation.produit._id.toString();
+    const produitPrice = variation.prix;
+
+    if (!acc[cimenterieId]) {
+      acc[cimenterieId] = {};
+    }
+
+    acc[cimenterieId][produitId] = produitPrice;
+
+    return acc;
+  }, {});
+
+  // Step 7: Fetch cimenterie and product names
+  const cimenterieIds = Object.keys(groupedByCimenterie);
+  const cimenteriePromises = cimenterieIds.map((id) => this.CimenterieModel.findById(id).exec());
+  const cimenteries = await Promise.all(cimenteriePromises);
+
+  const allProduitIds = [].concat(...Object.values(groupedByCimenterie).map((produits) => Object.keys(produits)));
+  const uniqueProduitIds = [...new Set(allProduitIds)];
+  const produitPromises = uniqueProduitIds.map((produitId) => this.ProduitModel.findById(produitId).exec());
+  const produits = await Promise.all(produitPromises);
+
+  const produitNameMap = produits.reduce((acc, produit) => {
+    acc[produit._id.toString()] = produit.designation; // Assuming 'name' is the field in ProductModel
+    return acc;
+  }, {});
+
+  // Step 8: Build final structure
+  const finalData = {
+    gouvernorat: pointDeVente.gouvernorat,
+    delegation: pointDeVente.delegation,
+    adresse: pointDeVente.adresse,
+    naturedepointdevente: pointDeVente.naturedepointdevente,
+    tel: pointDeVente.tel,
+    name: pointDeVente.name,
+    visitData, // Add the reclamation and observation data here
+    cimentries: cimenteries.map((cimenterie) => ({
+      cimenterieName: cimenterie.name,
+      produits: Object.keys(groupedByCimenterie[cimenterie._id.toString()]).map((produitId) => ({
+        produitName: produitNameMap[produitId],
+        prix: groupedByCimenterie[cimenterie._id.toString()][produitId],
+      })),
+    })),
+  };
+
+  return finalData;
+}
+
+
+
+
+
+
+
+
+
+
+
 }
