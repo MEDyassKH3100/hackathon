@@ -19,6 +19,7 @@ export class ProduitService {
       designation,
       prix,
     });
+    console.log(createProduitDto);
     return newProduit.save(); // Save the produit to the database
   }
 

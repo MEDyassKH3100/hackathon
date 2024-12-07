@@ -28,16 +28,8 @@ export class UserService {
     private readonly mailService: MailService,
   ) {}
 
-<<<<<<< HEAD
-
-
- // Fonction de connexion
- async login(email: string, password: string): Promise<{ token: string }> {
-  console.log("aaaa");
-=======
   // Fonction de connexion
   async login(email: string, password: string): Promise<{ token: string }> {
->>>>>>> 5cb0be8afdc87903b48954fddc5fa3fe726801cc
     const user = await this.userModel.findOne({ email }).exec();
 
     if (!user) {

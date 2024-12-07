@@ -9,6 +9,7 @@ export class CimenterieController {
 
   @Post()
   create(@Body() createCimenterieDto: CreateCimenterieDto) {
+    console.log("hereeeeee");
     return this.cimenterieService.create(createCimenterieDto);
   }
 

@@ -11,14 +11,14 @@ import { InjectModel } from '@nestjs/mongoose';
 export class CimenterieService {
 
   constructor(
-    @InjectModel(Cimenterie.name) private readonly CimenterieModel: Model<Cimenterie>,
+    @InjectModel(Cimenterie.name) private readonly cimenterieModel: Model<Cimenterie>,
   ) {}
 
 
 
   async create(createCimenterieDto: CreateCimenterieDto): Promise<Cimenterie> {
     // Use destructuring to ensure fields are mapped correctly
-    const newCimenterie = new this.CimenterieModel({
+    const newCimenterie = new this.cimenterieModel({
       ...createCimenterieDto,
     });
   
@@ -26,8 +26,8 @@ export class CimenterieService {
     return await newCimenterie.save();
   }
   
-  findAll() {
-    return `This action returns all cimenterie`;
+  async findAll(): Promise<Cimenterie[]> {
+    return this.cimenterieModel.find().exec();
   }
 
   findOne(id: number) {

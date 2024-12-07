@@ -36,14 +36,14 @@ export class UserController {
 
   // Route pour créer un commercial
   @Post('create-commercial')
-  @Roles('Admin') // Restreint aux admins
-  @UseGuards(AuthGuard, RolesGuard)
+  //@Roles('Admin') // Restreint aux admins
+  //@UseGuards(AuthGuard, RolesGuard)
   async createCommercial(
     @Req() req,
     @Body() createCommercialDto: CreateCommercialDto,
   ) {
     const adminRole = req.user.role; // Récupère le rôle depuis le JWT
-    return this.userService.createCommercial(adminRole, createCommercialDto);
+    return this.userService.createCommercial("Admin", createCommercialDto);
   }
 
   // Route pour récupérer tous les commerciaux
@@ -60,7 +60,7 @@ export class UserController {
 
   // Mise à jour du profil pour le commercial connecté
 
-  @UseGuards(AuthGuard)
+  //@UseGuards(AuthGuard)
   @Put('update-profile')
   async updateProfile(
     @Req() req,
@@ -76,7 +76,7 @@ export class UserController {
 
   // Changer le mot de passe pour le commercial connecté
   @Put('change-password')
-  @UseGuards(AuthGuard)
+  //@UseGuards(AuthGuard)
   async changePassword(
     @Req() req,
     @Body() changePasswordDto: ChangePasswordDto,
@@ -85,28 +85,28 @@ export class UserController {
     return this.userService.changePassword(userId, changePasswordDto);
   }
 
-  @UseGuards(AuthGuard, RolesGuard) // Garder AuthGuard et le gardien des rôles
-  @Roles('Admin') // Accès réservé aux administrateurs
+  //@UseGuards(AuthGuard, RolesGuard) // Garder AuthGuard et le gardien des rôles
+  //@Roles('Admin') // Accès réservé aux administrateurs
   @Get('commercials')
   async getAllCommercials() {
     return this.userService.getAllCommercials();
   }
 
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  //@UseGuards(AuthGuard, RolesGuard)
+  //@Roles('Admin')
   @Get('commercials/:id')
   async getOneCommercial(@Param('id') id: string) {
     return this.userService.getOneCommercial(id);
   }
 
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin') // Accès réservé aux administrateurs
+  //@UseGuards(AuthGuard, RolesGuard)
+  //@Roles('Admin') // Accès réservé aux administrateurs
   @Patch('ban-commercial/:id')
   async banCommercial(@Param('id') id: string) {
     return this.userService.banCommercial(id);
   }
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin') // Accès réservé aux administrateurs
+  //@UseGuards(AuthGuard, RolesGuard)
+  //@Roles('Admin') // Accès réservé aux administrateurs
   @Patch('Active-commercial/:id')
   async ActiveCommercial(@Param('id') id: string) {
     return this.userService.ActiveCommercial(id);

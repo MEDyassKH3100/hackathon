@@ -2,7 +2,7 @@
 /* eslint-disable prettier/prettier */
 // src/dto/create-visite.dto.ts
 
-import {IsOptional, IsString } from "class-validator";
+import {IsNumber, IsOptional, IsString } from "class-validator";
 
 
 export class CreateProduitDto {
@@ -10,7 +10,7 @@ export class CreateProduitDto {
 @IsOptional()
   @IsString()
   designation: string;
-
+  @IsNumber()
   prix: Number;
 
 }

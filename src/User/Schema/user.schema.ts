@@ -17,17 +17,17 @@ export class User extends Document {
   })
   role: string;
 
-  @Prop()
-  nom?: string;
+ // @Prop()
+  //nom?: string;
 
-  @Prop()
-  prenom?: string;
+  //@Prop()
+  //prenom?: string;
 
-  @Prop()
-  telephone?: string;
+  //@Prop()
+  //telephone?: string;
 
-  @Prop()
-  equipeRegionale?: string;
+  //@Prop()
+  //equipeRegionale?: string;
   @Prop({ default: false })
   isBanned: boolean;
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Visite' }] })

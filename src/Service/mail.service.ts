@@ -7,14 +7,16 @@ export class MailService {
 
   constructor() {
     // Configuration de l'envoi des emails (utilise Gmail)
+   
     this.transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
       port: 587,
       secure: false, // utilisez true pour le port 465
       auth: {
-        user: 'chatesprit3@gmail.com', // Remplacez par votre email
+        user:'chatesprit3@gmail.com', // Remplacez par votre email
         pass: 'vdhu sqjt wuid vjkr',  // Remplacez par votre mot de passe d'application Gmail
       },
+
     });
   }
 
@@ -31,8 +33,8 @@ export class MailService {
       subject: 'Code OTP pour réinitialisation de mot de passe',
       html: htmlTemplate,
     };
-
-    const info = await this.transporter.sendMail(mailOptions);
-    console.log('Preview URL:', nodemailer.getTestMessageUrl(info)); // Utile pour tester avec Ethereal
+    console.log("your otp",otp)
+    //const info = await this.transporter.sendMail(mailOptions);
+    //console.log('Preview URL:', nodemailer.getTestMessageUrl(info)); // Utile pour tester avec Ethereal
   }
 }
