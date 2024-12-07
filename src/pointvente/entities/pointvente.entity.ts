@@ -1,6 +1,4 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable prettier/prettier */
+
 import { Schema as MongooseSchema, Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
@@ -16,7 +14,11 @@ export class Pointvente {
   adresse: string;
 
   @Prop({ required: true })
-  naturedepointdevente: string;
+  naturedepointdevente: string; // client direct ou non direct ou non client
+
+  @Prop({ required: true })
+  typeDeVente : string //Grousiste, détaillant
+
 
   @Prop({ required: true })
   tel: string;

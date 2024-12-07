@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable prettier/prettier */
+
 import { Injectable } from '@nestjs/common';
 import { CreateCimenterieDto } from './dto/create-cimenterie.dto';
 import { UpdateCimenterieDto } from './dto/update-cimenterie.dto';
@@ -26,19 +25,23 @@ export class CimenterieService {
     return await newCimenterie.save();
   }
   
-  findAll() {
-    return `This action returns all cimenterie`;
+  async findAll() {
+    return this.CimenterieModel.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} cimenterie`;
+  async findOne(id: string) {
+    return await this.CimenterieModel.findById(id);
   }
 
-  update(id: number, updateCimenterieDto: UpdateCimenterieDto) {
-    return `This action updates a #${id} cimenterie`;
+  update(id: string, update: UpdateCimenterieDto) {
+    return this.CimenterieModel.findByIdAndUpdate(id, update, { new: true });
   }
+  // async updateUser(id: string, updateProfileDto: UpdateUserDto): Promise<User> {
+  //   return this.userModel.findByIdAndUpdate(id, updateProfileDto, { new: true });
+  // }
 
-  remove(id: number) {
-    return `This action removes a #${id} cimenterie`;
+
+  remove(id: string) {
+    return this.CimenterieModel.findByIdAndDelete(id);
   }
 }

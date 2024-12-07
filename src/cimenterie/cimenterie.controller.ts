@@ -14,21 +14,23 @@ export class CimenterieController {
 
   @Get()
   findAll() {
+    console.log("houssem");
     return this.cimenterieService.findAll();
   }
 
+
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.cimenterieService.findOne(+id);
+    return this.cimenterieService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCimenterieDto: UpdateCimenterieDto) {
-    return this.cimenterieService.update(+id, updateCimenterieDto);
+    return this.cimenterieService.update(id, updateCimenterieDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.cimenterieService.remove(+id);
+    return this.cimenterieService.remove(id);
   }
 }

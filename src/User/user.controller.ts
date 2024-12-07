@@ -12,7 +12,7 @@ import {
   Patch,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { User } from './Schema/user.schema';
+
 import { LoginDto } from './Dto/login.dto';
 import { CreateCommercialDto } from './Dto/create-commercial.dto';
 import { Roles } from 'src/Role/roles.decorator';
@@ -20,7 +20,7 @@ import { RolesGuard } from 'src/Role/roles.guard';
 import { AuthGuard } from 'src/Guards/auth.guard';
 import { UpdateCommercialDto } from './Dto/update-commercial.dto';
 import { ChangePasswordDto } from './Dto/change-password.dto';
-import { Request as ExpressRequest } from 'express';
+
 
 @Controller('user')
 export class UserController {
@@ -43,6 +43,8 @@ export class UserController {
     const adminRole = req.user.role; // Récupère le rôle depuis le JWT
     return this.userService.createCommercial(adminRole, createCommercialDto);
   }
+
+
 
   // Route pour récupérer tous les commerciaux
   @Get('commercials')

@@ -1,4 +1,4 @@
-/* eslint-disable prettier/prettier */
+
 // src/schemas/visite.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
@@ -18,10 +18,11 @@ export class Visite extends Document {
   pieceJointe: string; // You can change this to a buffer or file-related type if necessary
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  user: Types.ObjectId; // Reference to the User schema
+  user: Types.ObjectId; // Reference to the User schema (Responsable)
 
   @Prop({ type: Types.ObjectId, ref: 'Pointvente', required: true })
-  pointvente: Types.ObjectId; // Reference to the Pointvente model
+  pointvente: Types.ObjectId; // Reference to the Pointvente model (CC)
+
 }
 
 export const VisiteSchema = SchemaFactory.createForClass(Visite);

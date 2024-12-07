@@ -1,4 +1,4 @@
-/* eslint-disable prettier/prettier */
+
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
@@ -28,8 +28,12 @@ export class User extends Document {
 
   @Prop()
   equipeRegionale?: string;
+
+
   @Prop({ default: false })
   isBanned: boolean;
+
+
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Visite' }] })
   visites: Types.ObjectId[]; 
 

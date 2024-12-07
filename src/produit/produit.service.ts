@@ -1,4 +1,4 @@
-/* eslint-disable prettier/prettier */
+
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -19,11 +19,13 @@ export class ProduitService {
       designation,
       prix,
     });
+    console.log(newProduit);
     return newProduit.save(); // Save the produit to the database
   }
 
   // Get all Produits
   async findAll(): Promise<Produit[]> {
+    console.log(this.produitModel.find().exec());
     return this.produitModel.find().exec(); // Return all produits from the database
   }
 

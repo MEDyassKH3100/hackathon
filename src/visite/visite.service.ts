@@ -1,5 +1,5 @@
 /* eslint-disable no-var */
-/* eslint-disable prettier/prettier */
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@nestjs/common';
 import { CreateVisiteDto } from './dto/create-visite.dto';
@@ -9,6 +9,7 @@ import { Model, ObjectId, Types } from 'mongoose';
 import { Visite } from './entities/visite.entity';
 import { User } from 'src/user/Schema/user.schema';
 import { Pointvente } from 'src/pointvente/entities/pointvente.entity';
+import { use } from 'passport';
 
 @Injectable()
 export class VisiteService {
@@ -30,6 +31,7 @@ export class VisiteService {
     console.log("thi sfunction in invocked")
     // Validate if the user exists
     const user = await this.userModel.findById(userId).exec();
+    console.log("ususuususus",user);
     if (!user) {
       throw new Error(`User with ID ${userId} not found`);
     }

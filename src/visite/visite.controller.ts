@@ -1,4 +1,4 @@
-/* eslint-disable prettier/prettier */
+
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { VisiteService } from './visite.service';
 import { CreateVisiteDto } from './dto/create-visite.dto';
@@ -40,6 +40,7 @@ export class VisiteController {
 
   @Get('user/:userId')
   async getVisitsByUser(@Param('userId') userId: string): Promise<Visite[]> {
+    console.log("hshshhsbhbsbhsdbhdshbhbdkkkkkkkkkkkkkkkkkkkkshbshbshb",userId);
     return this.visiteService.getVisitsForUser(userId);
   }
 
@@ -104,6 +105,7 @@ this function return a list of visitis with populate point de vente
   }
 
 
+
   
 
   @Get(':id')
@@ -120,6 +122,7 @@ this function return a list of visitis with populate point de vente
 
   @Delete(':id')
   remove(@Param('id') id: string) {
+    console.log(id);
     return this.visiteService.remove(id);
   }
 

@@ -1,6 +1,5 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+
+import { IsString, IsNotEmpty } from 'class-validator';
 
 export class CreatePointventeDto {
   @IsString()
@@ -18,6 +17,10 @@ export class CreatePointventeDto {
   @IsString()
   @IsNotEmpty()
   naturedepointdevente: string;
+
+  @IsString()
+  @IsNotEmpty()
+  typeDeVente:string
 
   @IsString()
   @IsNotEmpty()

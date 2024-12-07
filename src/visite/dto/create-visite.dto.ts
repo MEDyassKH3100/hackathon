@@ -1,9 +1,9 @@
-/* eslint-disable prettier/prettier */
+
 // src/dto/create-visite.dto.ts
 import { IsDate, IsOptional, IsString } from 'class-validator';
 
 export class CreateVisiteDto {
-@IsOptional()
+  @IsOptional()
   @IsDate()
   date: Date;
 

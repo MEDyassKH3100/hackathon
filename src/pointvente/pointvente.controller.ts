@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable prettier/prettier */
+
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { PointventeService } from './pointvente.service';
 import { CreatePointventeDto } from './dto/create-pointvente.dto';
 import { UpdatePointventeDto } from './dto/update-pointvente.dto';
-import { CreateVisiteDto } from 'src/visite/dto/create-visite.dto';
+
 
 @Controller('pointvente')
 export class PointventeController {

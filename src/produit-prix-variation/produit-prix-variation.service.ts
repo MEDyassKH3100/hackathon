@@ -1,5 +1,5 @@
 /* eslint-disable no-var */
-/* eslint-disable prettier/prettier */
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ConsoleLogger, Injectable } from '@nestjs/common';
 import { CreateProduitPrixVariationDto } from './dto/create-produit-prix-variation.dto';
@@ -7,7 +7,7 @@ import { UpdateProduitPrixVariationDto } from './dto/update-produit-prix-variati
 import { CreateVisiteDto } from 'src/visite/dto/create-visite.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Visite } from 'src/visite/entities/visite.entity';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Pointvente } from 'src/pointvente/entities/pointvente.entity';
 import { User } from 'src/user/Schema/user.schema';
 import { Cimenterie } from 'src/cimenterie/entities/cimenterie.entity';
@@ -103,11 +103,15 @@ export class ProduitPrixVariationService {
       prixTable: number[];
     }[],
   ): Promise<any[]> {
+
+
+    // console.log("222222222222222222222222",createVisiteDto);
     // Validate Visit
     const createdVisite = await this.createVisiteForEndpointAndUser(
       pointDeVenteId,
       createVisiteDto,
     );
+    // console.log("3333333333333333", createdVisite);
   
     const allVariations = [];
   
@@ -170,8 +174,8 @@ export class ProduitPrixVariationService {
 
 
 
-  findAll() {
-    return `This action returns all produitPrixVariation`;
+  async findAll() {
+    return await this.produitPrixVariationModel.find().exec();
   }
 
   findOne(id: number) {
@@ -237,6 +241,7 @@ async getVisiteById(id: string) {
     acc[produit._id.toString()] = produit.designation; // Assuming 'name' is the field in the ProductModel
     return acc;
   }, {});
+
 var pointventeName = (await this.PointVenteModel.findById(visite.pointvente)).name
   // Step 6: Map the grouped data to include cimenterie names and product names
   const result = {
@@ -244,8 +249,10 @@ var pointventeName = (await this.PointVenteModel.findById(visite.pointvente)).na
     visiteId: visite._id,
     date: visite.date,
     observation: visite.observation,
+    Reclamation: visite.reclamation,
     cimentries: cimenteries.map((cimenterie, index) => ({
       cimenterieName: cimenterie.name, // Use the cimenterie name instead of ID
+      cimenterieId :cimenterie.id,
       produits: Object.keys(groupedByCimenterie[cimenterieIds[index]]).map((produitId) => ({
         produitName: produitNameMap[produitId], // Fetch the product name from the map
         prix: groupedByCimenterie[cimenterieIds[index]][produitId], // Get the product price
@@ -255,6 +262,210 @@ var pointventeName = (await this.PointVenteModel.findById(visite.pointvente)).na
 
   return result;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /* Update function  for vivist you should add this to the body of your reuqest
+  example how yo can pass input to this function
+  {
+    "pointDeVenteId": "675244a606a5cdf546751c7d",
+    "updateVisiteDto": {
+      "date": "2024-12-06",
+      "observation": "This is an updated observation",
+      "reclamation": "Reclamation text here",
+      "userId": "67522fecc4e52db5aceb684f"
+    },
+    "data": [
+      {
+        "cimenterieId": "675291b76feeb33c7b1c277e",
+        "produits": ["67525d228b3fdbf513e5f072", "67525d228b3fdbf513e5f072"],
+        "prixTable": [25.5, 30.0]
+      },
+      {
+        "cimenterieId": "67527ce0fbf1182411d2f80f",
+        "produits": ["67525d228b3fdbf513e5f072"],
+        "prixTable": [20.0]
+      }
+    ]
+  }
+  */
+
+
+  async updateProduitPrixVariation(
+    visiteId: string,
+    pointDeVenteId: string,
+    updateVisiteDto: { date: Date; observation: string; reclamation: string; userId: string },
+    data: { cimenterieId: string; produits: string[]; prixTable: number[] }[],
+  ): Promise<any[]> {
+    // Step 1: Fetch and update visit details
+    const visite = await this.visiteModel.findById(visiteId).exec();
+    if (!visite) {
+      throw new Error('Visite not found');
+    }
+
+    visite.date = updateVisiteDto.date;
+    visite.observation = updateVisiteDto.observation;
+    visite.reclamation = updateVisiteDto.reclamation;
+    visite.user = new Types.ObjectId(updateVisiteDto.userId);
+
+    await visite.save();
+
+    // Step 2: Delete old variations for the visite
+    await this.produitPrixVariationModel.deleteMany({ visite: visiteId });
+
+    const allVariations = [];
+
+    // Step 3: Create new variations
+    for (const entry of data) {
+      const { cimenterieId, produits, prixTable } = entry;
+
+      // Validate that the produit IDs exist
+      const validProduits = await this.ProduitModel.find({
+        _id: { $in: produits },
+      }).exec();
+
+      /*if (validProduits.length !== produits.length) {
+        throw new Error(
+          `Some Produit IDs are invalid. Invalid IDs: ${produits.filter(
+            id => !validProduits.map(p => p._id.toString()).includes(id),
+          ).join(', ')}`,
+        );
+      }
+  */
+      // Validate prixTable length
+      if (prixTable.length !== produits.length) {
+        throw new Error(`PrixTable length must match Produits length for Cimenterie ID ${cimenterieId}`);
+      }
+
+      // Add new variations
+      for (let i = 0; i < produits.length; i++) {
+        const produitPrixVariation = new this.produitPrixVariationModel({
+          produit: produits[i],
+          cimenterie: cimenterieId,
+          visite: new Types.ObjectId(visiteId),
+          prix: prixTable[i],
+        });
+
+        const savedProduitPrixVariation = await produitPrixVariation.save();
+        allVariations.push(savedProduitPrixVariation);
+      }
+    }
+
+    return allVariations;
+  }
+
+
+  async getVisitDetails(visitId: string): Promise<Array<Record<string, any>>> {
+    // Step 1: Fetch the variations linked to the visit
+    let variations = await this.produitPrixVariationModel.find().exec()
+
+    const allVariations = await this.produitPrixVariationModel.find().exec();
+
+    // Filtrer les variations où le champ visite correspond à visitId
+    variations = allVariations.filter(variation =>
+      variation.visite.toString() === visitId // Comparaison avec ObjectId
+    );
+
+    console.log(variations);
+
+
+
+
+    // console.log(variations[0]);
+    //   .find({ visite: visitId }) // Filter by visite ID
+    //   .exec();
+
+
+    if (!variations || variations.length === 0) {
+      throw new Error(`No variations found for the given visit ${visitId}`);
+    }
+
+    // Step 2: Extract unique cimenterie and produit IDs
+    const cimenterieIds = Array.from(new Set(variations.map(v => v.cimenterie.toString())));
+    const produitIds = Array.from(new Set(variations.map(v => v.produit.toString())));
+
+    // Step 3: Fetch Cimenterie and Produit details
+    const cimenteries = await this.CimenterieModel.find({ _id: { $in: cimenterieIds } }).exec();
+    const produits = await this.ProduitModel.find({ _id: { $in: produitIds } }).exec();
+
+    // Create lookup maps for quick access
+    const cimenterieMap = cimenteries.reduce((acc, cimenterie) => {
+      acc[cimenterie._id.toString()] = cimenterie.name; // Assuming Cimenterie has a 'name' field
+      return acc;
+    }, {});
+
+    const produitMap = produits.reduce((acc, produit) => {
+      acc[produit._id.toString()] = produit.designation; // Assuming Produit has a 'name' field
+      return acc;
+    }, {});
+
+    // Step 4: Group data by Cimenterie
+    const groupedByCimenterie = variations.reduce((acc, variation) => {
+      const cimenterieId = variation.cimenterie.toString();
+      const cimenterieName = cimenterieMap[cimenterieId];
+
+      if (!acc[cimenterieId]) {
+        acc[cimenterieId] = {
+          cimenterieId,
+          cimenterieName,
+          produits: [],
+          prixTable: [],
+        };
+      }
+
+      acc[cimenterieId].produits.push(produitMap[variation.produit.toString()]);
+      acc[cimenterieId].prixTable.push(variation.prix);
+
+      return acc;
+    }, {});
+
+    // Step 5: Convert grouped data into an array
+    const result = Object.values(groupedByCimenterie);
+
+    return result;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }
